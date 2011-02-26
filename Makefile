@@ -1,13 +1,18 @@
+CC=gcc
+LD=$(CC)
+CFLAGS=-I. -DDEBUG
+LDFLAGS=
+
 all: hashtable
 
 hashtable: hashtbl.o main.o
-	gcc hashtbl.o main.o -o hashtable
+	$(LD) $(LDFLAGS) $^ -o $@
 
-hashtbl.o: hashtbl.c
-	gcc -I. -c hashtbl.c
-
-main.o: main.c
-	gcc -I. -c main.c
+%.o: %.c
+	$(CC) $(CFLAGS) -c $<
 
 clean:
 	rm -f *.o hashtable
+
+test: hashtable input.txt
+	./hashtable < input.txt | grep coll

@@ -62,6 +62,7 @@ int hashtbl_insert(HASHTBL *hashtbl, const char *key, void *data)
     hsize hash = hashtbl->hashfunc(key) % hashtbl->size;
 
     node = hashtbl->nodes[hash];
+
     while (node) {
         if (!strcmp(node->key, key)) {
             node->data = data;
@@ -150,4 +151,20 @@ int hashtbl_resize(HASHTBL *hashtbl, hsize size)
     hashtbl->nodes = newtbl.nodes;
 
     return 0;
+}
+
+void hashtbl_dump(HASHTBL *hashtbl, FILE *stream)
+{
+    int i;
+    ENTRY *entry;
+    for (i = 0; i < hashtbl->size; ++i) {
+        entry = hashtbl->nodes[i];
+        if (entry)
+            printf("\n[%d]", i);
+        while (entry) {
+            printf(" -> (\"%s\":%p)", entry->key, entry->data);
+            entry = entry->next;
+        }
+    }
+    printf("\n");
 }

@@ -1,6 +1,7 @@
 #ifndef _HASHTBL_H
 #define _HASHTBL_H
 
+#include <stdio.h>
 #include<stdlib.h>
 
 typedef size_t hsize;
@@ -23,5 +24,6 @@ int hashtbl_insert(HASHTBL *hashtbl, const char *key, void *data);
 int hashtbl_remove(HASHTBL *hashtbl, const char *key);
 void *hashtbl_get(HASHTBL *hashtbl, const char *key);
 int hashtbl_resize(HASHTBL *hashtbl, hsize size);
+void hashtbl_dump(HASHTBL *hashtbl, FILE *stream);
 
 #endif
