@@ -3,7 +3,7 @@
 
 #include <hashtbl.h>
 
-static hsize bkdrhash(const char *key)
+static hsize bkdr_hash(const char *key)
 {
     hsize seed = 131; // 31 131 1313 13131 131313 etc.
     hsize hash = 0;
@@ -31,7 +31,7 @@ HASHTBL *hashtbl_create(hsize size, hsize (*hashfunc)(const char *))
     if (hashfunc)
         hashtbl->hashfunc = hashfunc;
     else
-        hashtbl->hashfunc = bkdrhash;
+        hashtbl->hashfunc = bkdr_hash;
 
     return hashtbl;
 }

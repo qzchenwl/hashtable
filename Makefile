@@ -13,6 +13,3 @@ hashtable: hashtbl.o main.o
 
 clean:
 	rm -f *.o hashtable
-
-test: hashtable input.txt
-	./hashtable < input.txt | grep coll
