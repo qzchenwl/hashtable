@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include<stdlib.h>
 
-typedef size_t HSIZE;
+typedef size_t hsize;
 
 typedef struct hashnode {
     char *key;
@@ -13,17 +13,17 @@ typedef struct hashnode {
 } ENTRY;
 
 typedef struct hashtbl {
-    HSIZE size;
+    hsize size;
     ENTRY **nodes;
-    HSIZE (*hashfunc)(const char *);
+    hsize (*hashfunc)(const char *);
 } HASHTBL;
 
-HASHTBL *hashtbl_create(HSIZE size, HSIZE (*hashfunc)(const char *));
+HASHTBL *hashtbl_create(hsize size, hsize (*hashfunc)(const char *));
 void hashtbl_destroy(HASHTBL *hashtbl);
 int hashtbl_insert(HASHTBL *hashtbl, const char *key, void *data);
 int hashtbl_remove(HASHTBL *hashtbl, const char *key);
 void *hashtbl_get(HASHTBL *hashtbl, const char *key);
-int hashtbl_resize(HASHTBL *hashtbl, HSIZE size);
+int hashtbl_resize(HASHTBL *hashtbl, hsize size);
 void hashtbl_dump(HASHTBL *hashtbl, FILE *stream);
 
 #endif
