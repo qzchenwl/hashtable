@@ -4,14 +4,14 @@
 #define TBL_SIZ 1013
 #define ELE_CNT 1000
 
-hsize hash_func(const char *key);
+HSIZE hash_func(const char *key);
 void help();
 
 int main(int argc, const char *argv[])
 {
     HASHTBL *tbl, *tbl2;
     ENTRY *entry;
-    hsize tblsiz, elecnt;
+    HSIZE tblsiz, elecnt;
     char *line = NULL;
     int ret, i, cnt, cnt2, len = 0;
 
@@ -75,8 +75,8 @@ int main(int argc, const char *argv[])
     return 0;
 }
 
-hsize hash_func(const char *key) {
-    hsize hash = 0;
+HSIZE hash_func(const char *key) {
+    HSIZE hash = 0;
     while (*key)
         hash += (*key++);
     return hash;

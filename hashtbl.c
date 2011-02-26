@@ -3,10 +3,10 @@
 
 #include <hashtbl.h>
 
-static hsize bkdr_hash(const char *key)
+static HSIZE bkdr_hash(const char *key)
 {
-    hsize seed = 131; // 31 131 1313 13131 131313 etc.
-    hsize hash = 0;
+    HSIZE seed = 131; // 31 131 1313 13131 131313 etc.
+    HSIZE hash = 0;
 
     while (*key)
         hash = hash * seed + (*key++);
@@ -14,7 +14,7 @@ static hsize bkdr_hash(const char *key)
     return hash;
 }
 
-HASHTBL *hashtbl_create(hsize size, hsize (*hashfunc)(const char *))
+HASHTBL *hashtbl_create(HSIZE size, HSIZE (*hashfunc)(const char *))
 {
     HASHTBL *hashtbl;
 
@@ -39,7 +39,7 @@ HASHTBL *hashtbl_create(hsize size, hsize (*hashfunc)(const char *))
 
 void hashtbl_destroy(HASHTBL *hashtbl)
 {
-    hsize n;
+    HSIZE n;
     ENTRY *node, *oldnode;
 
     for (n = 0; n < hashtbl->size; ++n) {
@@ -59,7 +59,7 @@ void hashtbl_destroy(HASHTBL *hashtbl)
 int hashtbl_insert(HASHTBL *hashtbl, const char *key, void *data)
 {
     ENTRY *node;
-    hsize hash = hashtbl->hashfunc(key) % hashtbl->size;
+    HSIZE hash = hashtbl->hashfunc(key) % hashtbl->size;
 
     node = hashtbl->nodes[hash];
 
@@ -87,7 +87,7 @@ int hashtbl_insert(HASHTBL *hashtbl, const char *key, void *data)
 int hashtbl_remove(HASHTBL *hashtbl, const char *key)
 {
     ENTRY *node, *prevnode = NULL;
-    hsize hash = hashtbl->hashfunc(key) % hashtbl->size;
+    HSIZE hash = hashtbl->hashfunc(key) % hashtbl->size;
 
     node = hashtbl->nodes[hash];
     while (node) {
@@ -111,7 +111,7 @@ int hashtbl_remove(HASHTBL *hashtbl, const char *key)
 void *hashtbl_get(HASHTBL *hashtbl, const char *key)
 {
     ENTRY *node;
-    hsize hash = hashtbl->hashfunc(key) % hashtbl->size;
+    HSIZE hash = hashtbl->hashfunc(key) % hashtbl->size;
 
     node = hashtbl->nodes[hash];
     while (node) {
@@ -125,10 +125,10 @@ void *hashtbl_get(HASHTBL *hashtbl, const char *key)
     return NULL;
 }
 
-int hashtbl_resize(HASHTBL *hashtbl, hsize size)
+int hashtbl_resize(HASHTBL *hashtbl, HSIZE size)
 {
     HASHTBL newtbl;
-    hsize n;
+    HSIZE n;
     ENTRY *node,*next;
 
     newtbl.size = size;
