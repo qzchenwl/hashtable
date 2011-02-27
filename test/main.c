@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <hashtbl.h>
+#include <common/hashtbl.h>
 
 #define TBL_SIZ 1013
 #define ELE_CNT 1000
@@ -9,11 +9,11 @@ void help();
 
 int main(int argc, const char *argv[])
 {
-    HASHTBL *tbl, *tbl2;
+    HASHTBL *tbl;
     ENTRY *entry;
     HSIZE tblsiz, elecnt;
     char *line = NULL;
-    int ret, i, cnt, cnt2, len = 0;
+    int ret, i, cnt, len = 0;
 
     if (argc == 0) {
         tblsiz = TBL_SIZ;
@@ -30,8 +30,8 @@ int main(int argc, const char *argv[])
 
     entry = malloc(sizeof(ENTRY));
     tbl = hashtbl_create(tblsiz, NULL);
-    tbl2 = hashtbl_create(tblsiz, hash_func);
-    for (i = 0, cnt = 0; i < elecnt; ++i) {
+    printf("tbl = %p\n", tbl);
+    for (i = 1, cnt = 0; i < elecnt; ++i) {
         if ( (ret = getline(&line, &len, stdin)) == -1) {
             fprintf(stderr, "getline() failed\n");
             continue;
@@ -40,34 +40,29 @@ int main(int argc, const char *argv[])
             line[ret-1] = '\0';
         entry->key = line;
         hashtbl_insert(tbl, entry->key, (void*)i);
-        hashtbl_insert(tbl2, entry->key, (void*)i);
         ++cnt;
     }
     printf("insert %d elements\n", cnt);
-
-    for (i = 0, cnt = 0, cnt2 = 0; i < tbl->size; ++i) {
+    printf("ele cnt = %d\n", tbl->count);
+    hashtbl_remove(tbl, "www.domain3912.com");
+    hashtbl_remove(tbl, "www.domain92492.com");
+    hashtbl_remove(tbl, "www.domain77224.com");
+    hashtbl_remove(tbl, "www.domain68464.com");
+    hashtbl_remove(tbl, "www.domain12497.com");
+    hashtbl_remove(tbl, "www.domain43997.com");
+    printf("ele cnt = %d\n", tbl->count);
+    for (i = 0, cnt = 0; i < tbl->size; ++i) {
         entry = tbl->nodes[i];
         if (entry)
             --cnt;
         while (entry) {
+            fprintf(stderr, "%s:%d\n", entry->key, (int)entry->data);
             ++cnt;
-            entry = entry->next;
-        }
-
-        entry = tbl2->nodes[i];
-        if (entry)
-            --cnt2;
-        while (entry) {
-            ++cnt2;
             entry = entry->next;
         }
     }
     printf("tbl %d collisions\n", cnt);
-    printf("tbl2 %d collisions\n", cnt2);
-
     hashtbl_dump(tbl, stdout);
-    hashtbl_dump(tbl2, stdout);
-
 
     if (line)
         free(line);

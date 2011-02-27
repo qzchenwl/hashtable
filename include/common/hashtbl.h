@@ -14,6 +14,7 @@ typedef struct hashnode {
 
 typedef struct hashtbl {
     HSIZE size;
+    HSIZE count;
     ENTRY **nodes;
     HSIZE (*hashfunc)(const char *);
 } HASHTBL;
@@ -25,5 +26,8 @@ int hashtbl_remove(HASHTBL *hashtbl, const char *key);
 void *hashtbl_get(HASHTBL *hashtbl, const char *key);
 int hashtbl_resize(HASHTBL *hashtbl, HSIZE size);
 void hashtbl_dump(HASHTBL *hashtbl, FILE *stream);
+
+#define DEF_SIZE 100000
+#define HASHTBL_INIT(hashtbl) (hashtbl = hashtbl_create(DEF_SIZE, NULL))
 
 #endif

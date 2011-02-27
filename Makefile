@@ -1,15 +1,15 @@
 CC=gcc
 LD=$(CC)
-CFLAGS=-I. -DDEBUG
+CFLAGS=-I./include -DDEBUG -g
 LDFLAGS=
 
 all: hashtable
 
-hashtable: hashtbl.o main.o
+hashtable: src/hashtbl.o test/main.o
 	$(LD) $(LDFLAGS) $^ -o $@
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $<
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -f *.o hashtable
+	rm -f *.o src/*.o test/*.o hashtable

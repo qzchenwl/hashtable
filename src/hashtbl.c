@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include <hashtbl.h>
+#include <common/hashtbl.h>
 
 static HSIZE bkdr_hash(const char *key)
 {
@@ -27,6 +27,7 @@ HASHTBL *hashtbl_create(HSIZE size, HSIZE (*hashfunc)(const char *))
     }
 
     hashtbl->size = size;
+    hashtbl->count = 0;
 
     if (hashfunc)
         hashtbl->hashfunc = hashfunc;
@@ -35,7 +36,6 @@ HASHTBL *hashtbl_create(HSIZE size, HSIZE (*hashfunc)(const char *))
 
     return hashtbl;
 }
-
 
 void hashtbl_destroy(HASHTBL *hashtbl)
 {
@@ -55,7 +55,6 @@ void hashtbl_destroy(HASHTBL *hashtbl)
     free(hashtbl);
 }
 
-
 int hashtbl_insert(HASHTBL *hashtbl, const char *key, void *data)
 {
     ENTRY *node;
@@ -63,6 +62,7 @@ int hashtbl_insert(HASHTBL *hashtbl, const char *key, void *data)
 
     node = hashtbl->nodes[hash];
 
+    /* check if the key is already in the hashtbl */
     while (node) {
         if (!strcmp(node->key, key)) {
             node->data = data;
@@ -71,7 +71,16 @@ int hashtbl_insert(HASHTBL *hashtbl, const char *key, void *data)
         node = node->next;
     }
 
-    if (!(node = malloc(sizeof(ENTRY)))) return -1;
+    /* resize table if the threshold is exceeded
+     * default threshold is:
+     * <table size> * <load factor 0.75> */
+    if (hashtbl->count >= hashtbl->size * 0.75) {
+        hashtbl_resize(hashtbl, hashtbl->size * 2 + 1);
+    }
+
+    /* create new entry */
+    if (!(node = malloc(sizeof(ENTRY))))
+        return -1;
     if (!(node->key = strdup(key))) {
         free(node);
         return -1;
@@ -79,10 +88,10 @@ int hashtbl_insert(HASHTBL *hashtbl, const char *key, void *data)
     node->data = data;
     node->next = hashtbl->nodes[hash];
     hashtbl->nodes[hash] = node;
+    hashtbl->count++;
 
     return 0;
 }
-
 
 int hashtbl_remove(HASHTBL *hashtbl, const char *key)
 {
@@ -98,6 +107,7 @@ int hashtbl_remove(HASHTBL *hashtbl, const char *key)
             else
                 hashtbl->nodes[hash] = node->next;
             free(node);
+            hashtbl->count--;
             return 0;
         }
         prevnode = node;
@@ -107,7 +117,6 @@ int hashtbl_remove(HASHTBL *hashtbl, const char *key)
     return -1;
 }
 
-
 void *hashtbl_get(HASHTBL *hashtbl, const char *key)
 {
     ENTRY *node;
@@ -116,7 +125,6 @@ void *hashtbl_get(HASHTBL *hashtbl, const char *key)
     node = hashtbl->nodes[hash];
     while (node) {
         if (!strcmp(node->key, key)) {
-            fprintf(stderr, "get key=%s, data=%p\n", node->key, node->data);
             return node->data;
         }
         node = node->next;
@@ -132,6 +140,7 @@ int hashtbl_resize(HASHTBL *hashtbl, HSIZE size)
     ENTRY *node,*next;
 
     newtbl.size = size;
+    newtbl.count = 0;
     newtbl.hashfunc = hashtbl->hashfunc;
 
     if (!(newtbl.nodes = calloc(size, sizeof(ENTRY*))))
@@ -148,6 +157,7 @@ int hashtbl_resize(HASHTBL *hashtbl, HSIZE size)
 
     free(hashtbl->nodes);
     hashtbl->size = newtbl.size;
+    hashtbl->count = newtbl.count;
     hashtbl->nodes = newtbl.nodes;
 
     return 0;
